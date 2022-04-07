@@ -39,7 +39,7 @@ public final class CrawlResultWriter {
     try(Writer writer = Files.newBufferedWriter(path,StandardOpenOption.CREATE)) {
       write(writer);
     }catch (IOException e) {
-      e.getMessage();
+      e.printStackTrace();
     }
 
   }
@@ -58,7 +58,7 @@ public final class CrawlResultWriter {
     try {
       objectMapper.writeValue(writer, result);
     }catch (IOException e) {
-      e.getMessage();
+      e.printStackTrace();
     }
   }
 }

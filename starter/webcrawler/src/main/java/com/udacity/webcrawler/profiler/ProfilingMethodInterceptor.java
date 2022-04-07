@@ -21,13 +21,10 @@ final class ProfilingMethodInterceptor implements InvocationHandler {
   // TODO: You will need to add more instance fields and constructor arguments to this class.
   ProfilingMethodInterceptor(Clock clock, Object delegate, ProfilingState state) {
     this.clock = Objects.requireNonNull(clock);
-    this.delegate = delegate;
-    this.state = state;
+    this.delegate = Objects.requireNonNull(delegate);
+    this.state = Objects.requireNonNull(state);
   }
 
-  private boolean methodProf (Method method) {
-    return method.getAnnotation(Profiled.class)!= null;
-  }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -38,22 +35,19 @@ final class ProfilingMethodInterceptor implements InvocationHandler {
     //       ProfilingState methods.
 
 
-    boolean prof = methodProf(method);
-    Instant start = clock.instant();
-    Object objectResult;
-
-    try {
-      objectResult = method.invoke(delegate, args);
-    }catch(IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }catch (InvocationTargetException e) {
-      throw e.getTargetException();
-    }finally {
-      if (prof) {
-        Duration duration = Duration.between(start, clock.instant());
-      }
-    }
-    return objectResult;
+ if (method.getAnnotation(Profiled.class) != null) {
+   final Instant start = clock.instant();
+   try {
+     method.invoke(delegate, args);
+   }catch (InvocationTargetException e) {
+     throw e.getTargetException();
+   }catch (IllegalAccessException e) {
+     throw new RuntimeException(e);
+   }finally {
+     state.record(delegate.getClass(), method, Duration.between(start, clock.instant()));
+   }
+ }
+    return method.invoke(delegate, args);
     //return null;
   }
 }
