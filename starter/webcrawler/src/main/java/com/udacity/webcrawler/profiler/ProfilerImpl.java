@@ -3,7 +3,13 @@ package com.udacity.webcrawler.profiler;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -25,6 +31,23 @@ final class ProfilerImpl implements Profiler {
     this.startTime = ZonedDateTime.now(clock);
   }
 
+  // To check the state of the class
+  private boolean classCondition(Class<?> myClass) {
+    Method[] methods = myClass.getDeclaredMethods();
+    if (methods.length == 0) {
+      return false;
+    }
+
+    for (Method method : methods) {
+      if (method.getAnnotation(Profiled.class) != null) {
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+
   @Override
   public <T> T wrap(Class<T> klass, T delegate) {
     Objects.requireNonNull(klass);
@@ -33,13 +56,26 @@ final class ProfilerImpl implements Profiler {
     //       ProfilingMethodInterceptor and return a dynamic proxy from this method.
     //       See https://docs.oracle.com/javase/10/docs/api/java/lang/reflect/Proxy.html.
 
-    return delegate;
+    if (!classCondition(klass)) {
+      throw new IllegalArgumentException();
+    }
+    InvocationHandler invocationHandler = new ProfilingMethodInterceptor(clock, delegate, state);
+    Object proxyObject  = Proxy.newProxyInstance(klass.getClassLoader(), new Class[] {klass}, invocationHandler);
+
+    //return delegate;
+    return (T) proxyObject;
   }
 
   @Override
-  public void writeData(Path path) {
+  public void writeData(Path path) throws IOException {
     // TODO: Write the ProfilingState data to the given file path. If a file already exists at that
     //       path, the new data should be appended to the existing file.
+    try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+      writer.write(RFC_1123_DATE_TIME.format(startTime));
+      writer.write(System.lineSeparator());
+      state.write(writer);
+      writer.write(System.lineSeparator());
+    }
   }
 
   @Override
