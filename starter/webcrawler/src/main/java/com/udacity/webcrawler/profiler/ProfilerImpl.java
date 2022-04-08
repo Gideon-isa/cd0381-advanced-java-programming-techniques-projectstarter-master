@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Clock;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
@@ -31,22 +32,6 @@ final class ProfilerImpl implements Profiler {
     this.startTime = ZonedDateTime.now(clock);
   }
 
-  // To check the state of the class
-  private boolean classCondition(Class<?> myClass) {
-    Method[] methods = myClass.getDeclaredMethods();
-    if (methods.length == 0) {
-      return false;
-    }
-
-    for (Method method : methods) {
-      if (method.getAnnotation(Profiled.class) != null) {
-        return false;
-      }
-    }
-
-    return false;
-  }
-
 
   @Override
   public <T> T wrap(Class<T> klass, T delegate) {
@@ -56,9 +41,10 @@ final class ProfilerImpl implements Profiler {
     //       ProfilingMethodInterceptor and return a dynamic proxy from this method.
     //       See https://docs.oracle.com/javase/10/docs/api/java/lang/reflect/Proxy.html.
 
-    if (!classCondition(klass)) {
+    if (Arrays.stream(klass.getMethods()).noneMatch(s -> s.isAnnotationPresent(Profiled.class))) {
       throw new IllegalArgumentException();
     }
+
     InvocationHandler invocationHandler = new ProfilingMethodInterceptor(clock, delegate, state);
     Object proxyObject  = Proxy.newProxyInstance(klass.getClassLoader(), new Class[] {klass}, invocationHandler);
 
@@ -75,6 +61,8 @@ final class ProfilerImpl implements Profiler {
       writer.write(System.lineSeparator());
       state.write(writer);
       writer.write(System.lineSeparator());
+    }catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
