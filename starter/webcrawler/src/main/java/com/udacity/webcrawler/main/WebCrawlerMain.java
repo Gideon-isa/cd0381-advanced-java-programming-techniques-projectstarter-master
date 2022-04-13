@@ -52,7 +52,7 @@ public final class WebCrawlerMain {
     }else {
 //      Path path = Paths.get(this.config.getProfileOutputPath());
 //      profiler.writeData(path);
-      profiler.writeData(Path.of(this.config.getResultPath()));
+      profiler.writeData(Path.of(this.config.getProfileOutputPath()));
     }
   }
 
