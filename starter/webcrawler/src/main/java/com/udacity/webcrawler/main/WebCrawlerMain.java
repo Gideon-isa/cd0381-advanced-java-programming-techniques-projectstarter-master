@@ -42,16 +42,12 @@ public final class WebCrawlerMain {
     if (this.config.getResultPath().isEmpty()) {
         resultWriter.write(new OutputStreamWriter(System.out));
     }else {
-//      Path path = Paths.get(this.config.getResultPath());
-//      resultWriter.write(path);
       resultWriter.write(Path.of(this.config.getResultPath()));
     }
     // TODO: Write the profile data to a text file (or System.out if the file name is empty)
     if (this.config.getProfileOutputPath().isEmpty()) {
       profiler.writeData(new OutputStreamWriter(System.out));
     }else {
-//      Path path = Paths.get(this.config.getProfileOutputPath());
-//      profiler.writeData(path);
       profiler.writeData(Path.of(this.config.getProfileOutputPath()));
     }
   }

@@ -46,10 +46,12 @@ final class ProfilerImpl implements Profiler {
     }
 
     InvocationHandler invocationHandler = new ProfilingMethodInterceptor(clock, delegate, state);
-    Object proxyObject  = Proxy.newProxyInstance(klass.getClassLoader(), new Class[] {klass}, invocationHandler);
+
+    @SuppressWarnings("unchecked")
+    T proxyObject  = (T) Proxy.newProxyInstance(klass.getClassLoader(), new Class[] {klass}, invocationHandler);
 
     //return delegate;
-    return (T) proxyObject;
+    return proxyObject;
   }
 
   @Override

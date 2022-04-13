@@ -11,6 +11,11 @@ Q1. Run the web crawler using the configurations located at src/main/config/writ
 
     Why did the parser take more time when run with ParallelWebCrawler?
 
+    Answer :- The Parser took more time for the ParallelWebCrawler because it captures and sums up all the
+              time it took in each of the threads.
+
+
+
 
 Q2. Your manager ran your crawler on her old personal computer, using the configurations from Q1, and she notices that
     the sequential crawler actually outperforms the parallel crawler. She would like to know why.
@@ -18,15 +23,25 @@ Q2. Your manager ran your crawler on her old personal computer, using the config
     (a) Suggest one reason why the sequential web crawler was able to read more web pages than the parallel crawler.
         (Hint: Try setting "parallelism" to 1 in the JSON configs to simulate your manager's computer.)
 
+    Answer :- One reason is that old computers lack multiple CPU cores to run threads for the parallel webcrawler.
+              This will result to more time to execute these threads with multiple-core computer.
+
     (b) Suggest one scenario in which the parallel web crawler will almost certainly perform better than the sequential
         crawler. Why will it perform better?
+
+
+
 
 
 Q3. Analyze your method profiler through the lens of Aspect Oriented Programming, by answering the following questions:
 
     (a) What cross-cutting concern is being addressed by the com.udacity.webcrawler.profiler.Profiler class?
+        Answer :- It addresses the performance profiling of methods
 
     (b) What are the join points of the Profiler in the web crawler program?
+        Answer :- Methods annotated with @Profiled
+
+
 
 
 Q4. Identify three (3) different design patterns used in this project, and explain which interfaces, classes, and/or
@@ -35,4 +50,15 @@ Q4. Identify three (3) different design patterns used in this project, and expla
     For each pattern, name one thing about the pattern that you LIKED, and one thing you DISLIKED. If you did not like
     anything, you can name two things you disliked.
 
+     Answers:
+     1. Dependency Injection used WebCrawlerMain Class
+     Like : Reduces dependencies needed
+     Dislike : It takes or requires more interfaces
 
+     2. Builder used in CrawlerResult and CrawlerConfiguration
+     Like : Separate construction and representation of objects
+     Dislike : Error prone
+
+     3. Proxy Pattern used ProfilerImpl and ProfilingMethodInterceptor
+      Like : Ease of Implementation
+      Dislike : Difficult to comprehend
