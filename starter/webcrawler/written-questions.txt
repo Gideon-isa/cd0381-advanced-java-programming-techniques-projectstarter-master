@@ -29,6 +29,8 @@ Q2. Your manager ran your crawler on her old personal computer, using the config
     (b) Suggest one scenario in which the parallel web crawler will almost certainly perform better than the sequential
         crawler. Why will it perform better?
 
+    Answer :- On a multiple-core computer, the parallel webcrawler will outperform better than the sequential webcrawler
+              The parallel webcrawler will perform multiple tasks in threads simultaneously.
 
 
 
