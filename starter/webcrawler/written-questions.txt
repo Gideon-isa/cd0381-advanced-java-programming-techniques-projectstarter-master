@@ -53,14 +53,14 @@ Q4. Identify three (3) different design patterns used in this project, and expla
     anything, you can name two things you disliked.
 
      Answers:
-     1. Dependency Injection used WebCrawlerMain Class
+     1. Dependency Injection used in WebCrawlerMain Class
      Like : Reduces dependencies needed
      Dislike : It takes or requires more interfaces
 
-     2. Builder used in CrawlerResult and CrawlerConfiguration
+     2. Builder used in CrawlerResult and CrawlerConfiguration classes
      Like : Separate construction and representation of objects
      Dislike : Error prone
 
-     3. Proxy Pattern used ProfilerImpl and ProfilingMethodInterceptor
+     3. Proxy Pattern used in ProfilerImpl and ProfilingMethodInterceptor classes
       Like : Ease of Implementation
       Dislike : Difficult to comprehend
