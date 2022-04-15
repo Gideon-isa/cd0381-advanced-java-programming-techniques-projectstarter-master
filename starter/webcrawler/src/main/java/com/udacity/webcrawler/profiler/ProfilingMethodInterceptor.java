@@ -34,21 +34,19 @@ final class ProfilingMethodInterceptor implements InvocationHandler {
     //       methods, the interceptor should record how long the method call took, using the
     //       ProfilingState methods.
 
- Object invokedObject;
- if (method.getAnnotation(Profiled.class) != null) {
-   final Instant start = clock.instant();
-   try {
-     invokedObject = method.invoke(delegate, args);
-   }catch (InvocationTargetException e) {
-     throw e.getTargetException();
-   }catch (IllegalAccessException e) {
-     throw new RuntimeException(e);
-   }finally {
-     state.record(delegate.getClass(), method, Duration.between(start, clock.instant()));
-   }
-   return invokedObject;
- }
-    return method.invoke(delegate, args);
-    //return null;
-  }
+    final Instant start = clock.instant();
+
+    try {
+      return method.invoke(delegate,args);
+    } catch (InvocationTargetException e) {
+      throw e.getTargetException();
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }finally {
+      if (method.getAnnotation(Profiled.class) != null) {
+        state.record(delegate.getClass(), method, Duration.between(start, clock.instant()));
+      }
+    }
+    }
+
 }
